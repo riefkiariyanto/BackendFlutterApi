@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class ListUserController extends Controller
@@ -128,23 +129,25 @@ class ListUserController extends Controller
      */
     public function destroy($id)
     {
-        // Find the product by ID
-        $product = Product::find($id);
+        $user = User::find($id);
 
-        if (!$product) {
-            return redirect('/client/product')->with('error','Product not found');
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
         }
-
-        // Delete the product
-        $product->delete();
-
-        return redirect('/client/product')->with('success','Product Delete Successfully');
+    
+        // Delete associated records in the cart table
+        $user->carts()->delete();
+    
+        // Delete the user
+        $user->delete();
+    
+        return response()->json(['message' => 'User and associated records deleted successfully'], 200);
     }
 
     public function listUser(Request $request)
     {
         $user = User::all();
-
+        
         return response([
             'totalData' => count($user) ,
             'data' => $user

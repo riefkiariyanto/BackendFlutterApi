@@ -8,6 +8,7 @@ use App\Http\Controllers\ListUserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionClientController;
+use App\Http\Controllers\MidtransController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,9 +48,8 @@ Route::put('edit-biodata-client/{id}', [ListShopController::class, 'editBiodataC
 Route::delete('delete-biodata-client/{id}', [ListShopController::class, 'deleteBiodataClient']);
 
 Route::get('get-product/{id}', [ProductController::class, 'getProductById']);
-Route::get('get-store-prodcut', [ProductController::class, 'showBiodataShop']);
+Route::get('get-store-product', [ProductController::class, 'showBiodataShop']);
 Route::get('list-product/shop', [ProductController::class, 'listProductShop']);
-
 Route::get('list-product', [ProductController::class, 'listProduct']);
 Route::post('add-product', [ProductController::class, 'postProduct']);
 Route::put('edit-product/{id}', [ProductController::class, 'editProduct']);
@@ -59,7 +59,7 @@ Route::get('get-service/{id}', [ServiceController::class, 'getServiceById']);
 Route::get('list-service', [ServiceController::class, 'listService']);
 Route::post('add-service', [ServiceController::class, 'postService']);
 Route::put('edit-service/{id}', [ServiceController::class, 'editService']);
-Route::delete('delete-service/{id}', [ServiceController::class, 'deleteService']);
+Route::delete('delete-service/{id}', [ServiceController::class, 'del    eteService']);
 
 Route::get('list-cart', [TransactionClientController::class, 'listCart']);
 Route::get('cart/id-product-user', [TransactionClientController::class, 'getIdProductAndIdUser']);
@@ -67,17 +67,18 @@ Route::post('add-cart', [TransactionClientController::class, 'postCart']);
 Route::post('add-cart-id', [TransactionClientController::class, 'postCartID']);
 Route::put('edit-cart/{id}', [TransactionClientController::class, 'editCart']);
 Route::put('update-cart-quantity/{cartId}', [TransactionClientController::class, 'updateCartQuantity']);
-
 Route::delete('delete-cart/{id}', [TransactionClientController::class, 'deleteByIdCart']);
 
 Route::get('get-transaction/{id}', [TransactionClientController::class, 'getTransactionById']);
 Route::get('list-transaction', [TransactionClientController::class, 'listTransaction']);
+Route::get('list-transaction-cart', [TransactionClientController::class, 'listTransactionCart']);
+
 Route::post('add-transaction', [TransactionClientController::class, 'postTransaction']);
 Route::put('edit-transaction/{id}', [TransactionClientController::class, 'editTransaction']);
 Route::delete('delete-transaction/{id}', [TransactionClientController::class, 'deleteTransaction']);
 
-// Route::get('all-shops-and-products', [ListShopController::class, 'getAllShopsAndProducts']);
 Route::get('all-shops-and-products', [ListShopController::class, 'getAllShopsAndProducts']);
+Route::get('payment', [MidtransController::class, 'getPaymentToken']);
 
 
 

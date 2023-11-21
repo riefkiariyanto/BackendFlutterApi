@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\ProductRequest;
 use App\Models\Client;
 use App\Models\BiodataShop;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ListShopController extends Controller
 {
@@ -137,19 +138,29 @@ class ListShopController extends Controller
      */
     public function destroy($id)
     {
-        // Find the product by ID
-        $product = Client::find($id);
+        // Find the client by ID
+        $client = Client::find($id);
 
-        if (!$product) {
-            return redirect('/admin/client')->with('error','Client not found');
+        if (!$client) {
+            return response()->json(['error' => 'Client not found'], 404);
         }
 
-        // Delete the product
-        $product->delete();
+        // Check for associated records in biodata_toko
+        $associatedRecords = BiodataShop::where('id_clients', $id)->get();
 
-        return redirect('/admin/client')->with('success','Client Delete Successfully');
+        if ($associatedRecords->isNotEmpty()) {
+            // Delete associated records
+            BiodataShop::where('id_clients', $id)->delete();
+        }
+
+        // Delete the client
+        $client->delete();
+
+        return response()->json(['message' => 'Client and associated records deleted successfully'], 200);
+        
     }
-
+    
+    
     public function listClient(Request $request)
     {
         $clients = Client::all();
@@ -245,16 +256,14 @@ class ListShopController extends Controller
         $client = Client::findOrFail($id);
         $client->delete();
 
-        return Response::json(['message' => 'Data client berhasil dihapus'], 200);
+        return response()->json(['message' => 'Data client berhasil dihapus'], 200);
     }
 
     public function getBiodataClientById($id)
     {
         $data = BiodataShop::findOrFail($id);
 
-        return response([
-            'data' => $data,
-        ], 200);
+        return response()->json(['data' => $data], 200);
     }
 
     public function postBiodataClient(Request $request)
@@ -346,7 +355,8 @@ class ListShopController extends Controller
         $bio = BiodataShop::findOrFail($id);
         $bio->delete();
 
-        return Response::json(['message' => 'Data toko berhasil dihapus'], 200);
+        return response()::json(['message' => 'Data toko berhasil dihapus'], 200);
     }
 
 }
+

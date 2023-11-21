@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionClientController extends Controller
@@ -70,7 +71,7 @@ class TransactionClientController extends Controller
             'price' => $request->input('price'),
             'description' => $request->input('description'),
             'status' => $request->input('status'),
-            'image' => $imageName, // Simpan nama file gambar
+            'image' => $imageName, 
         ];
 
         $product = Service::create($data);
@@ -176,37 +177,48 @@ class TransactionClientController extends Controller
 
     public function listCart()
     {
-        $data = Cart::select('p.id as id_product', 'bt.id as id_bioadata_toko', 'cart.id_user', 'cart.id as id_cart', 'p.name as product_name', 'bt.store_name', 'cart.qty', 'p.image', 'p.price')
+        // Get all carts
+        $data = Cart::select('p.id as id_product', 'bt.id as id_bioadata_toko', 'cart.id_user', 'cart.id as id_cart', 'p.name as product_name', 'bt.store_name', 'cart.qty', 'p.image', 'p.price', 'bt.id_clients')
             ->join('products as p', 'p.id', 'cart.id_products')
             ->join('biodata_toko as bt', 'bt.id_clients', 'p.idclient')
             ->get();
     
-        $groupedData = [];
+        // Get carts with transactions
+        $cartsWithTransactions = Transaction::pluck('id_cart')->toArray();
     
-        foreach ($data as $item) {
+        // Filter out carts with transactions
+        $filteredData = $data->filter(function ($item) use ($cartsWithTransactions) {
+            return !in_array($item['id_cart'], $cartsWithTransactions);
+        });
+    
+        // Group the filtered data
+        $groupedData = [];
+        foreach ($filteredData as $item) {
             $groupKey = $item['id_bioadata_toko'] . '-' . $item['id_user'];
     
             if (!isset($groupedData[$groupKey])) {
                 $groupedData[$groupKey] = [
+                    'id_client' => $item['id_clients'],
                     'id_bioadata_toko' => $item['id_bioadata_toko'],
                     'id_user' => $item['id_user'],
                     'store_name' => $item['store_name'],
                     'products' => [],
+                    'total_price' => 0,
                 ];
             }
     
             $productKey = $item['id_product'];
     
-            // Cek apakah produk sudah ada dalam grup ini
             $productExists = false;
-            foreach ($groupedData[$groupKey]['products'] as $product) {
+            foreach ($groupedData[$groupKey]['products'] as &$product) {
                 if ($product['id_product'] === $productKey) {
                     $productExists = true;
+                    // Calculate the total price for this product
+                    $product['total_price'] += $item['qty'] * $item['price'];
                     break;
                 }
             }
     
-            // Jika produk belum ada, tambahkan ke grup
             if (!$productExists) {
                 $groupedData[$groupKey]['products'][] = [
                     'id_cart' => $item['id_cart'],
@@ -215,17 +227,24 @@ class TransactionClientController extends Controller
                     'image' => $item['image'],
                     'price' => $item['price'],
                     'qty' => $item['qty'],
+                    'total_price' => $item['qty'] * $item['price'],
                 ];
             }
+    
+            $groupedData[$groupKey]['total_price'] += $item['qty'] * $item['price'];
         }
     
+        // Convert to array values
         $result = array_values($groupedData);
     
         return response([
-            'totalData' => count($data),
+            'totalData' => count($filteredData),
             'data' => $result
         ], 200);
     }
+    
+    
+
     
     public function updateCartQuantity(Request $request, $cartId)
     {
@@ -351,7 +370,70 @@ class TransactionClientController extends Controller
         return response()->json(['message' => 'Data cart berhasil dihapus'], 200);
     }
 
+    public function listTransactionCart(Request $request)
+    {
+        $transactions = Transaction::with('cart', 'user', 'cart.product', 'shop')->get();
 
+        $result = [];
+        $groupedData = [];
+
+        foreach ($transactions as $transaction) {
+            $cart = $transaction->cart;
+            $user = $transaction->user;
+            $shop = $transaction->shop;
+            $product = $cart->product;
+            $code = $transaction->code;
+
+            if ($cart && $user && $shop && $product) {
+                $total = $cart->qty * $product->price;
+
+                if (!isset($groupedData[$code])) {
+                   
+                    $groupedData[$code] = [
+                        'user' => [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'phone' => $user->phone,
+                            'address' => $user->address,
+                       
+                        ],
+                        'code' => $code,
+                        'id_client' => $shop->id_clients,
+                        'id_bioadata_toko' => $shop->id_bioadata_toko,
+                        'id_user' => $user->id,
+                        'store_name' => $shop->store_name,
+                        'products' => [],
+                        'total_price' => 0,
+                    ];
+                }
+
+                $groupedData[$code]['products'][] = [
+                    'id_transaction' => $transaction->id,
+                    'image' => $product->image, 
+                    'status' => $transaction->status,
+                    'id_cart' => $cart->id,
+                    'id_product' => $product->id,
+                    'product_name' => $product->name,
+                    'price' => $product->price,
+                    'qty' => $cart->qty,
+                    'total_price' => $total,
+                ];
+
+                $groupedData[$code]['total_price'] += $total;
+            }
+        }
+
+        $formattedData = [];
+
+        foreach ($groupedData as $data) {
+            $formattedData[] = $data;
+        }
+
+        return response([
+            'totalData' => count($formattedData),
+            'data' => $formattedData
+        ], 200);
+    }
 
     public function listTransaction(Request $request)
     {
@@ -387,7 +469,7 @@ class TransactionClientController extends Controller
 
         return response([
             'data' => $create,
-        ], 201);
+        ], 200);
     }
 
     public function editTransaction(Request $request, $id)

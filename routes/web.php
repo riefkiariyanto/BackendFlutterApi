@@ -94,6 +94,7 @@ Route::post('admin/store-client', [ListShopController::class, 'store'])->name('a
 Route::delete('admin/{id}', [ListShopController::class, 'destroy'])->name('client.delete');
 Route::put('validateClient/{id}', [ListShopController::class, 'validateClient'])->name('client.validateClient');
 Route::put('client/{id}', [ListShopController::class, 'update'])->name('client.update');
+Route::delete('/admin/client/{id}', [ListShopController::class, 'destroy'])->name('client.delete');
 
 Route::get('admin/user', [ListUserController::class, 'index'])->name('admin.user');
 Route::get('admin/add-user', [ListUserController::class, 'create'])->name('admin.add-user');

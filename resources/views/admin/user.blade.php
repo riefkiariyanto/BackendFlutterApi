@@ -30,7 +30,7 @@
                             <td class="border-b p-4 pl-8 pt-3 pb-3 text-slate-400 text-left d-flex">
                               <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                              <form action="{{ route('product.delete', ['id' => $product->id]) }}" method="POST">
+                              <form action="{{ route('user.delete', ['id' => $product->id]) }}" method="POST">
                                   @csrf
                                   @method('DELETE')
                                   <button type="submit" class="btn btn-danger">Delete</button>

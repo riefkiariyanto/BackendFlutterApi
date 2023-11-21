@@ -181,7 +181,6 @@ class ProductController extends Controller
             'no_telp' => $biodataShop->no_telp,
             'latitude' => $biodataShop->latitude,
             'longitude' => $biodataShop->longitude,
-            // Tambahkan informasi lain yang ingin Anda sertakan dalam respons API
         ]);
     }
 
