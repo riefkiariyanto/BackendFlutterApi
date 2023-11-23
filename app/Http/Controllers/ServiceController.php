@@ -15,6 +15,10 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->middleware('userlogin');
+    // }
     public function index()
     {
         $idClient = Auth::guard('client')->user()->id;
@@ -70,7 +74,7 @@ class ServiceController extends Controller
 
         $product = Service::create($data);
 
-        return redirect('/client/add-product')->with('message','Service Added Successfully');
+        return redirect('/client/add-product')->with('success','Service Added Successfully');
 
     }
 

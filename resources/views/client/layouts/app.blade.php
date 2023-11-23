@@ -32,17 +32,26 @@
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
 
-                    @if (Session::has('notif.success'))
-                    <div class="bg-blue-300 mt-2 p-4">
-                        <span class="text-white">{{ Session::get('notif.success') }}</span>
-                    </div>
-                    @endif
                 </div>
             </header>
         @endif
 
             <!-- Page Content -->
             <main>
+                 @if($message=Session::get('success'))
+                  <div class="">
+                      <div class="alert alert-success" role="alert">
+                        {{$message}}
+                      </div>
+                  </div>
+                  @endif
+                  @if($message=Session::get('error'))
+                  <div class="">
+                      <div class="alert alert-danger" role="alert">
+                        {{$message}}
+                      </div>
+                  </div>
+                  @endif
                 {{ $slot }}
             </main>
         </div>

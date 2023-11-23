@@ -55,7 +55,9 @@ require __DIR__.'/adminauth.php';
 //     return view('client.profile');
 // })->middleware(['auth:client'])->name('client.profile');
 
-Route::get('client/product', [ProductController::class, 'index'])->name('client.product');
+Route::get('client/product', [ProductController::class, 'index'])
+->middleware(['auth:client'])
+->name('client.product');
 
 
 // Route::get('/client/add-product', function () {
@@ -74,46 +76,146 @@ Route::get('/client/dashboard', [HomeController::class, 'index'])
     ->middleware(['auth:client'])
     ->name('client.dashboard');
 
-Route::get('client/add-product', [ProductController::class, 'create'])->name('client.add-product');
-Route::post('client/store-product', [ProductController::class, 'store'])->name('client.store-product');
-Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('product.delete');
-Route::put('products/{id}', [ProductController::class, 'update'])->name('product.update');
-Route::put('products/image/{id}', [ProductController::class, 'image'])->name('product.image');
+Route::get('client/add-product', [ProductController::class, 'create'])
+->middleware(['auth:client'])
+->name('client.add-product');
 
-Route::get('client/service', [ServiceController::class, 'index'])->name('client.service');
-Route::get('client/add-service', [ServiceController::class, 'create'])->name('client.add-service');
-Route::post('client/store-service', [ServiceController::class, 'store'])->name('client.store-service');
-Route::delete('service/{id}', [ServiceController::class, 'destroy'])->name('service.delete');
-Route::put('service/{id}', [ServiceController::class, 'update'])->name('service.update');
-Route::put('service/image/{id}', [ServiceController::class, 'image'])->name('service.image');
+Route::post('client/store-product', [ProductController::class, 'store'])
+->middleware(['auth:client'])
+->name('client.store-product');
+
+Route::delete('products/{id}', [ProductController::class, 'destroy'])
+->middleware(['auth:client'])
+->name('product.delete');
+
+Route::put('products/{id}', [ProductController::class, 'update'])
+->middleware(['auth:client'])
+->name('product.update');
+
+Route::put('products/image/{id}', [ProductController::class, 'image'])
+->middleware(['auth:client'])
+->name('product.image');
+
+// Route::get('client/service', [ServiceController::class, 'index'])
+// ->middleware(['auth:admin'])
+// ->name('client.service');
+
+// Route::get('client/add-service', [ServiceController::class, 'create'])
+// ->middleware(['auth:admin'])
+// ->name('client.add-service');
+
+// Route::post('client/store-service', [ServiceController::class, 'store'])
+// ->middleware(['auth:client'])
+// ->name('client.store-service');
+
+// Route::delete('service/{id}', [ServiceController::class, 'destroy'])
+// ->middleware(['auth:admin'])
+// ->name('service.delete');
+
+// Route::put('service/{id}', [ServiceController::class, 'update'])
+// ->middleware(['auth:admin'])
+// ->name('service.update');
+
+// Route::put('service/image/{id}', [ServiceController::class, 'image'])
+// ->middleware(['auth:admin'])
+// ->name('service.image');
 
 
-Route::get('admin/client', [ListShopController::class, 'index'])->name('admin.client');
-Route::get('admin/add-client', [ListShopController::class, 'create'])->name('admin.add-client');
-Route::post('admin/store-client', [ListShopController::class, 'store'])->name('admin.store-client');
-Route::delete('admin/{id}', [ListShopController::class, 'destroy'])->name('client.delete');
-Route::put('validateClient/{id}', [ListShopController::class, 'validateClient'])->name('client.validateClient');
-Route::put('client/{id}', [ListShopController::class, 'update'])->name('client.update');
-Route::delete('/admin/client/{id}', [ListShopController::class, 'destroy'])->name('client.delete');
+Route::get('admin/client', [ListShopController::class, 'index'])
+->middleware(['auth:admin'])
+->name('admin.client');
 
-Route::get('admin/user', [ListUserController::class, 'index'])->name('admin.user');
-Route::get('admin/add-user', [ListUserController::class, 'create'])->name('admin.add-user');
-Route::post('admin/store-user', [ListUserController::class, 'store'])->name('admin.store-user');
-Route::delete('client/{id}', [ListUserController::class, 'destroy'])->name('user.delete');
-Route::put('client/{id}', [ListUserController::class, 'update'])->name('user.update');
+Route::get('admin/add-client', [ListShopController::class, 'create'])
+->middleware(['auth:admin'])
+->name('admin.add-client');
 
-Route::get('client/transaction', [TransactionClientController::class, 'index'])->name('client.transaction');
-Route::get('client/add-transaction', [TransactionClientController::class, 'create'])->name('client.add-transaction');
-Route::post('client/store-transaction', [TransactionClientController::class, 'store'])->name('client.store-transaction');
-Route::delete('transaction/{id}', [TransactionClientController::class, 'destroy'])->name('transaction.delete');
-Route::put('transaction/{id}', [TransactionClientController::class, 'update'])->name('transaction.update');
-Route::put('transaction/{id}', [TransactionClientController::class, 'done'])->name('transaction.done');
+Route::post('admin/store-client', [ListShopController::class, 'store'])
+->middleware(['auth:admin'])
+->name('admin.store-client');
 
-Route::get('client/profile', [ProfileController::class, 'index'])->name('client.profile');
-Route::get('client/edit-profile', [ProfileController::class, 'edit'])->name('client.edit-profile');
-Route::get('client/new-profile', [ProfileController::class, 'create'])->name('client.new-profile');
-Route::post('client/store-profile', [ProfileController::class, 'store'])->name('client.store-profile');
-Route::post('client/update-profile', [ProfileController::class, 'updateNew'])->name('client.update-profile');
+Route::delete('admin/{id}', [ListShopController::class, 'destroy'])
+->middleware(['auth:admin'])
+->name('client.delete');
+
+Route::put('validateClient/{id}', [ListShopController::class, 'validateClient'])
+->middleware(['auth:admin'])
+->name('client.validateClient');
+
+Route::put('client/{id}', [ListShopController::class, 'update'])
+->middleware(['auth:admin'])
+->name('client.update');
+
+Route::delete('/admin/client/{id}', [ListShopController::class, 'destroy'])
+->middleware(['auth:admin'])
+->name('client.delete');
+
+Route::get('admin/user', [ListUserController::class, 'index'])
+->middleware(['auth:admin'])
+->name('admin.user');
+
+Route::get('admin/user/update_status/{id}/{status}', [ListUserController::class, 'activeOrDeactiveUser'])->middleware(['auth:admin']);
+Route::get('admin/client/update_status/{id}/{status}', [ListShopController::class, 'activeOrDeactiveClient'])
+->middleware(['auth:admin']);
+
+Route::get('admin/add-user', [ListUserController::class, 'create'])
+->middleware(['auth:admin'])
+->name('admin.add-user');
+
+Route::post('admin/store-user', [ListUserController::class, 'store'])
+->middleware(['auth:admin'])
+->name('admin.store-user');
+
+Route::delete('client/{id}', [ListUserController::class, 'destroy'])
+->middleware(['auth:admin'])
+->name('user.delete');
+
+Route::put('client/{id}', [ListUserController::class, 'update'])
+->middleware(['auth:admin'])
+->name('user.update');
+
+Route::get('client/transaction', [TransactionClientController::class, 'index'])
+->middleware(['auth:admin'])
+->name('client.transaction');
+
+Route::get('client/add-transaction', [TransactionClientController::class, 'create'])
+->middleware(['auth:client'])
+->name('client.add-transaction');
+
+Route::post('client/store-transaction', [TransactionClientController::class, 'store'])
+->middleware(['auth:client'])
+->name('client.store-transaction');
+
+Route::delete('transaction/{id}', [TransactionClientController::class, 'destroy'])
+->middleware(['auth:client'])
+->name('transaction.delete');
+
+Route::put('transaction/{id}', [TransactionClientController::class, 'update'])
+->middleware(['auth:client'])
+->name('transaction.update');
+
+Route::put('transaction/{id}', [TransactionClientController::class, 'done'])
+->middleware(['auth:client'])
+->name('transaction.done');
+
+Route::get('client/profile', [ProfileController::class, 'index'])
+->middleware(['auth:client'])
+->name('client.profile');
+
+Route::get('client/edit-profile', [ProfileController::class, 'edit'])
+->middleware(['auth:client'])
+->name('client.edit-profile');
+
+Route::get('client/new-profile', [ProfileController::class, 'create'])
+->middleware(['auth:client'])
+->name('client.new-profile');
+
+Route::post('client/store-profile', [ProfileController::class, 'store'])
+->middleware(['auth:client'])
+->name('client.store-profile');
+
+Route::post('client/update-profile', [ProfileController::class, 'updateNew'])
+->middleware(['auth:client'])
+->name('client.update-profile');
 
 // Route::post('api/list-user', [ListUserController::class, 'listUser']);
 

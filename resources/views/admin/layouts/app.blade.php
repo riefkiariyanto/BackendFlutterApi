@@ -37,8 +37,23 @@
 
             <!-- Page Content -->
             <main>
+                  @if($message=Session::get('success'))
+                  <div class="">
+                      <div class="alert alert-success" role="alert">
+                        {{$message}}
+                      </div>
+                  </div>
+                  @endif
+                  @if($message=Session::get('error'))
+                  <div class="">
+                      <div class="alert alert-danger" role="alert">
+                        {{$message}}
+                      </div>
+                  </div>
+                  @endif
                 {{ $slot }}
             </main>
+
         </div>
     </body>
 </html>

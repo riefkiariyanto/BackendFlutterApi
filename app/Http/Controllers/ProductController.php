@@ -16,6 +16,10 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->middleware('userlogin');
+    // }
     public function index()
     {
         $idClient = Auth::guard('client')->user()->id;
@@ -73,7 +77,7 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
-        return redirect('/client/add-product')->with('message','Product Added Successfully');
+        return redirect('/client/add-product')->with('success','Product Added Successfully');
     }
     /**
      * Display the specified resource.

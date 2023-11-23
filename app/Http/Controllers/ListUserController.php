@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class ListUserController extends Controller
 {
@@ -16,6 +17,10 @@ class ListUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->middleware('userlogin');
+    // }
     public function index()
     {
         // $idClient = Auth::guard('client')->user()->id;
@@ -64,7 +69,7 @@ class ListUserController extends Controller
 
         $product = Product::create($data);
 
-        return redirect('/client/add-product')->with('message','Product Added Successfully');
+        return redirect('/client/add-product')->with('success','Product Added Successfully');
 
     }
 
@@ -136,12 +141,23 @@ class ListUserController extends Controller
         }
     
         // Delete associated records in the cart table
-        $user->carts()->delete();
+        //$user->carts()->delete();
     
         // Delete the user
-        $user->delete();
-    
-        return response()->json(['message' => 'User and associated records deleted successfully'], 200);
+        //$user->delete();
+        $cart = DB::table('cart')->where('id_user',$id)->get();
+        foreach ($cart as $key => $value) {
+            DB::table('transaction')->where('id_cart',$value->id)->delete();
+        }
+        DB::table('cart')->where('id_user',$id)->delete();
+        DB::table('users')->where('id',$id)->delete();
+        return redirect('admin/user')->with('success','User successfully deleted');
+    }
+
+    public function activeOrDeactiveUser($id,$status)
+    {
+        DB::table('users')->where('id',$id)->update(['status'=>$status]);
+        return redirect('admin/user')->with('success','User successfully '.$status.' ');
     }
 
     public function listUser(Request $request)

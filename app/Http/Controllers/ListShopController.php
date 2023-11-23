@@ -9,7 +9,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-
+use DB;
 class ListShopController extends Controller
 {
     /**
@@ -17,14 +17,21 @@ class ListShopController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->middleware('userlogin');
+    // }
     public function index()
     {
         // $idClient = Auth::guard('client')->user()->id;
-
+        // if(!Auth::check())
+        // {
+        //     dd('s');
+        // }
         $products = Client::join('biodata_toko', 'clients.id', '=', 'biodata_toko.id_clients')
             ->select('clients.*', 'biodata_toko.*')
             ->get();
-
+            //dd($products);
         return view('admin.client', ['products' => $products]);
     }
 
@@ -67,7 +74,7 @@ class ListShopController extends Controller
 
         $product = Product::create($data);
 
-        return redirect('/client/add-product')->with('message','Product Added Successfully');
+        return redirect('/client/add-product')->with('success','Product Added Successfully');
 
     }
 
@@ -142,22 +149,39 @@ class ListShopController extends Controller
         $client = Client::find($id);
 
         if (!$client) {
-            return response()->json(['error' => 'Client not found'], 404);
+            return redirect('admin/client')->with('error','Client and associated records deleted unsuccessfully');
         }
+
 
         // Check for associated records in biodata_toko
         $associatedRecords = BiodataShop::where('id_clients', $id)->get();
-
+        //
         if ($associatedRecords->isNotEmpty()) {
             // Delete associated records
+            foreach ($associatedRecords as $key => $value) 
+            {
+                $cart = DB::table('cart')->where('id_biodata_toko',$value->id)->get();
+                foreach ($cart as $key => $value1) {
+                    DB::table('transaction')->where('id_cart',$value1->id)->delete();
+                }
+                DB::table('cart')->where('id_biodata_toko',$value->id)->delete();
+            }
             BiodataShop::where('id_clients', $id)->delete();
+            DB::table('products')->where('idclient',$id)->delete();
         }
 
         // Delete the client
         $client->delete();
 
-        return response()->json(['message' => 'Client and associated records deleted successfully'], 200);
+        return redirect('admin/client')->with('success','Client and associated records deleted successfully');
         
+    }
+
+    public function activeOrDeactiveClient($id,$status)
+    {   
+        //dd($id);
+        DB::table('clients')->where('id',$id)->update(['status'=>$status]);
+        return redirect('admin/client')->with('success','Client successfully '.$status.' ');
     }
     
     

@@ -17,6 +17,10 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->middleware('userlogin');
+    // }
     public function index()
     {
         $idClient = Auth::guard('client')->user()->id;
@@ -83,7 +87,7 @@ class ProfileController extends Controller
 
         $product = Profile::create($data);
 
-        return redirect('/client/profile')->with('message','Profile Added Successfully');
+        return redirect('/client/profile')->with('success','Profile Added Successfully');
 
     }
 
@@ -94,7 +98,7 @@ class ProfileController extends Controller
         $biodata = BiodataShop::where('id_clients', $idUser)->first(); // Use first() instead of get()
 
         if (!$biodata) {
-            return redirect('/client/profile')->with('message', 'Profile Not Found');
+            return redirect('/client/profile')->with('success', 'Profile Not Found');
         }
 
         if ($request->hasFile('logo')) {
@@ -123,7 +127,7 @@ class ProfileController extends Controller
 
         $biodata->update($clientData);
 
-        return redirect('/client/profile')->with('message', 'Profile Updated Successfully');
+        return redirect('/client/profile')->with('success', 'Profile Updated Successfully');
     }
 
 

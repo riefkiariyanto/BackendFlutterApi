@@ -10,7 +10,7 @@
   <div class="py-12">
     <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
+            <div class="p-6 text-gray-900 table-responsive">
                 <table class="border-collapse table-auto w-full text-sm">
                     <thead>
                         <tr>
@@ -53,15 +53,17 @@
                               <form action="{{ route('client.delete', ['id' => $product->id_clients]) }}" method="POST">
                                   @csrf
                                   @method('DELETE')
-                                  <button type="submit" class="btn btn-danger">Delete</button>
+                                  <button type="submit" onclick="return confirm('Yakin untuk delete client?')" class="btn btn-danger">Delete</button>
                               </form>
 
-                              <form action="{{ route('client.validateClient', ['id' => $product->id]) }}" method="POST">
-                                  @csrf
-                                  @method('put')
-                                  <button type="submit" class="btn btn-success ml-2">Validasi Toko</button>
-                              </form>
-
+                             &nbsp;
+                             @if($product->status == 'active')
+                                <a href="{{url('admin/client/update_status/'.$product->id_clients.'/deactive')}}" 
+                                   onclick="return confirm('Yakin untuk deactive client?')" class="btn btn-warning">Deactive</a>
+                              @else
+                                <a href="{{url('admin/client/update_status/'.$product->id_clients.'/active')}}"
+                                   onclick="return confirm('Yakin untuk active client?')" class="btn btn-success">Active</a>
+                              @endif
                             </td>
                         </tr>
                         @endforeach
