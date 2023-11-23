@@ -11,7 +11,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
 class TransactionClientController extends Controller
 {
     /**
@@ -27,18 +27,27 @@ class TransactionClientController extends Controller
     {
         $idClient = Auth::guard('client')->user()->id;
 
-        $products = Transaction::join('users', 'transaction.id_user', '=', 'users.id')
-            ->select('transaction.*', 'users.*')
-            ->where('id_client', $idClient)
-            ->get();
+        // $products = Transaction::join('users', 'transaction.id_user', '=', 'users.id')
+        //     ->select('transaction.*', 'users.*')
+        //     ->where('id_client', $idClient)
+        //     ->get();
 
-        $cart = Transaction::join('cart', 'transaction.id_cart', '=', 'cart.id')
-            ->join('products', 'cart.id_products', '=', 'products.id')
-            ->select('cart.qty as qty_cart', 'products.*') // Select columns as needed
-            ->where('transaction.id_client', $idClient)
-            ->get();
+        $data = DB::table('transaction as trs')
+                ->join('cart as crt','crt.id','=','trs.id_cart')
+                ->join('products as prod','prod.id','=','crt.id_products')
+                ->join('clients as cli','cli.id','=','trs.id_client')
+                ->join('biodata_toko as bto','bto.id_clients','=','cli.id')
+                ->join('users as us','us.id','=','trs.id_user')
+                ->where('trs.id_client',$idClient)
+                ->select('prod.name as product_name','prod.price as product_price'
+                        ,'trs.*'
+                        ,'cli.name as client_name','cli.email as client_email'
+                        ,'us.name as user_name','us.phone as user_phone'
+                        ,'us.address as user_address','us.email as user_email'
+                        ,'bto.store_name','bto.no_telp')
+                ->get();
 
-        return view('client.transaction', ['products' => $products, 'cart' => $cart]);
+        return view('client.transaction', ['data' => $data,]);
     }
 
     /**
@@ -166,16 +175,17 @@ class TransactionClientController extends Controller
     public function destroy($id)
     {
         // Find the product by ID
-        $product = Service::find($id);
+        $product = DB::table('transaction')->where('id',$id)->first();
 
         if (!$product) {
-            return redirect('/client/service')->with('error','Service not found');
+            return redirect('/client/transaction')->with('error','Transaction not found');
         }
-
+        DB::table('transaction')->where('id',$id)->delete();
+        DB::table('cart')->where('id',$product->id_cart)->delete();
         // Delete the product
-        $product->delete();
+        
 
-        return redirect('/client/service')->with('success','Service Delete Successfully');
+        return redirect('/client/transaction')->with('success','Transaction Delete Successfully');
     }
 
 
