@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BiodataShop;
-
+use DB;
 class ProductController extends Controller
 {
     /**
@@ -33,9 +33,29 @@ class ProductController extends Controller
         }else{
             return view('client.formProfile');
         }
+    }
 
-        // dd($products);
+    public function indexAdmin()
+    {
+        $data = DB::table('products as prod')
+                ->join('clients as cli','cli.id','=','prod.idclient')
+                ->join('biodata_toko as bto','bto.id_clients','=','cli.id')
+                ->select('prod.*','bto.store_name')
+                ->get();
+        return view('admin.product',compact('data'));
+    }
 
+    public function delete($id)
+    {
+        //cart
+        $cart = DB::table('cart')->where('id_products',$id)->get();
+        foreach ($cart as $key => $value) {
+            //transaction
+            DB::table('transaction')->where('id_cart',$value->id)->delete();
+        }
+        DB::table('cart')->where('id_products',$id)->delete();
+        DB::table('products')->where('id',$id)->delete();
+        return redirect('admin/list/product')->with('success','Successfully delete product');
     }
 
     /**
@@ -77,7 +97,7 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
-        return redirect('/client/add-product')->with('success','Product Added Successfully');
+        return redirect('/client/product')->with('success','Product Added Successfully');
     }
     /**
      * Display the specified resource.
@@ -110,6 +130,8 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //dd($request->all());
+        $data = $request->all();
         // Find the product by ID
         $product = Product::find($id);
 
@@ -117,16 +139,26 @@ class ProductController extends Controller
             return redirect()->route('product.index')->with('error', 'Product not found');
         }
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public', $imageName);
+            $data['image'] = $imageName;
+        }else{
+            unset($data['image']);
+        }
+
+        //dd($data);
         // Validate the form data (you can customize the validation rules based on your requirements)
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            // Add more validation rules as needed
-        ]);
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'category' => 'required|string|max:255',
+        //     'price' => 'required|numeric',
+        //     // Add more validation rules as needed
+        // ]);
 
         // Update the product with the form data
-        $product->update($request->all());
+        $product->update($data);
 
         // Redirect back to the product index page after updating
         return redirect('/client/product')->with('success','Product updated successfully');

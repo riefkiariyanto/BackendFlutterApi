@@ -33,7 +33,7 @@
                         <tr>
                             <td class="border-b p-4 pl-8 pt-3 pb-3 text-slate-400 text-left">{{ $loop->index + 1 }}</td>
                             <td class="border-b p-4 pl-8 pt-3 pb-3 text-slate-400 text-left">
-                              <img data-bs-toggle="modal" data-bs-target="#editImage{{ $product->id }}" style="width: 40%; border-radius: 6px;" src="{{ asset('storage/' . $product->image) }}" alt="Product Image">
+                              <img style="width: 40%; border-radius: 6px;" src="{{ asset('storage/' . $product->image) }}" alt="Product Image">
                             </td>
                             <td class="border-b p-4 pl-8 pt-3 pb-3 text-slate-400 text-left">{{ $product->name }}</td>
                             <td class="border-b p-4 pl-8 pt-3 pb-3 text-slate-400 text-left">{{ $product->category }}</td>
@@ -46,43 +46,23 @@
                                   Edit
                               </button>
 
-                              <div class="modal fade" id="editImage{{ $product->id }}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                                  <div class="modal-dialog">
-                                      <div class="modal-content">
-                                          <div class="modal-header">
-                                              <h5 class="modal-title" id="editModalLabel">Edit Gambar</h5>
-                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                          </div>
-                                          <div class="modal-body">
-                                              <form action="{{ route('product.image', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
-                                                  @csrf
-                                                  @method('PUT')
-                                                  <div class="form-group">
-                                                      <label for="exampleFormControlInput1" class="form-label">Gambar Produk:</label>
-                                                      <input class="form-control" name='image' type="file" id="image">
-                                                  </div>
-
-                                                  <div class="modal-footer">
-                                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                      <button type="submit" class="btn btn-primary">Save changes</button>
-                                                  </div>
-                                              </form>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
+                     
 
                               <div class="modal fade" id="editModal{{ $product->id }}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                                  <div class="modal-dialog">
+                                  <div class="modal-dialog modal-xl">
                                       <div class="modal-content">
                                           <div class="modal-header">
                                               <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
                                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                           </div>
                                           <div class="modal-body">
-                                              <form action="{{ route('product.update', ['id' => $product->id]) }}" method="POST">
+                                              <form action="{{ route('product.update', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
                                                   @csrf
                                                   @method('PUT')
+                                                  <div class="form-group" align="center">
+                                                      <label  class="form-label">Gambar Saat Ini:</label>
+                                                      <img style="width: 20%; border-radius: 6px;" src="{{ asset('storage/' . $product->image) }}">
+                                                  </div>
                                                   <div class="form-group">
                                                       <label for="exampleFormControlInput1" class="form-label">Gambar Produk:</label>
                                                       <input class="form-control" name='image' type="file" id="image">
@@ -90,27 +70,27 @@
 
                                                   <div class="form-group">
                                                       <label for="name">Nama:</label>
-                                                      <input type="text" class="form-control" name="name" value="{{ $product->name }}">
+                                                      <input type="text" required class="form-control" name="name" value="{{ $product->name }}">
                                                   </div>
 
                                                   <div class="form-group">
                                                       <label for="category">Kategori:</label>
-                                                      <input type="text" class="form-control" name="category" value="{{ $product->category }}">
+                                                      <input type="text" required class="form-control" name="category" value="{{ $product->category }}">
                                                   </div>
 
                                                   <div class="form-group">
                                                       <label for="category">Deskripsi:</label>
-                                                      <textarea class="form-control" name="description" rows="4">{{ $product->description }}</textarea>
+                                                      <textarea required class="form-control" name="description" rows="4">{{ $product->description }}</textarea>
                                                   </div>
 
                                                   <div class="form-group">
                                                       <label for="category">Stok:</label>
-                                                      <input type="number" class="form-control" name="qty" value="{{ $product->qty }}">
+                                                      <input required type="number" class="form-control" name="qty" value="{{ $product->qty }}">
                                                   </div>
 
                                                   <div class="form-group">
                                                       <label for="price">Price:</label>
-                                                      <input type="number" class="form-control" name="price" value="{{ $product->price }}">
+                                                      <input required type="number" class="form-control" name="price" value="{{ $product->price }}">
                                                   </div>
 
                                                   <div class="modal-footer">

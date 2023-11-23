@@ -156,6 +156,10 @@ Route::get('admin/user', [ListUserController::class, 'index'])
 Route::get('admin/user/update_status/{id}/{status}', [ListUserController::class, 'activeOrDeactiveUser'])->middleware(['auth:admin']);
 Route::get('admin/client/update_status/{id}/{status}', [ListShopController::class, 'activeOrDeactiveClient'])
 ->middleware(['auth:admin']);
+Route::get('admin/product/delete/{id}', [ProductController::class, 'delete'])
+->middleware(['auth:admin']);
+Route::get('admin/list/product', [ProductController::class, 'indexAdmin'])
+->middleware(['auth:admin']);
 
 Route::get('admin/add-user', [ListUserController::class, 'create'])
 ->middleware(['auth:admin'])
@@ -174,7 +178,7 @@ Route::put('client/{id}', [ListUserController::class, 'update'])
 ->name('user.update');
 
 Route::get('client/transaction', [TransactionClientController::class, 'index'])
-->middleware(['auth:admin'])
+->middleware(['auth:client'])
 ->name('client.transaction');
 
 Route::get('client/add-transaction', [TransactionClientController::class, 'create'])

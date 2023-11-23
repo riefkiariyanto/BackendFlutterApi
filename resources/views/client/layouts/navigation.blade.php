@@ -21,21 +21,12 @@
                         {{ __('Product') }}
                     </x-nav-link>
                 </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('client.service')" :active="request()->routeIs('service')">
-                        {{ __('Service') }}
-                    </x-nav-link>
-                </div>
+
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('client.transaction')" :active="request()->routeIs('transaction')">
                         {{ __('Riwayat Transaksi') }}
                     </x-nav-link>
                 </div>
-                <!-- <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('client.add-product')" :active="request()->routeIs('add-product')">
-                        {{ __('Add Product') }}
-                    </x-nav-link>
-                </div> -->
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
