@@ -11,6 +11,7 @@
 
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        
         <h2 class="text-4xl font-bold text-center">Client Login</h2>
         <form method="POST" action="{{ route('client.login') }}">
             @csrf
@@ -39,7 +40,13 @@
                     <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
                 </label>
             </div>
-
+            @if($message=Session::get('error'))
+            <div style="color:red;">
+                <div class="alert alert-danger" role="alert">
+                    {{$message}}
+                </div>
+            </div>
+            @endif
             <div class="flex items-center justify-end mt-4">
               
                     <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('admin.login') }}">

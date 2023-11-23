@@ -225,10 +225,10 @@ class ProductController extends Controller
         $productsWithShop = Product::with('shop')->get();
         $totalProducts = Product::count();
 
-        return response()->json([
-        'data' => $productsWithShop,
-        'totalProducts' => $totalProducts
-    ], 200);
+            return response()->json([
+            'data' => $productsWithShop,
+            'totalProducts' => $totalProducts
+        ], 200);
     }
 
     public function listProduct(Request $request)
@@ -236,7 +236,6 @@ class ProductController extends Controller
         
         $clients = Product::all();
         return response([
-            
             'totalData' => count($clients) ,
             'data' => $clients
         ], 200);

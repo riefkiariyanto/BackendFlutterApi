@@ -7,7 +7,7 @@ use App\Http\Requests\Clientauth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -28,6 +28,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
+        $data = $request->all();
+        $check = DB::table('clients')->where('email',$data['email'])->first();
+        if($check)
+        {
+            if($check->status == 'deactive')
+            {
+                return redirect()->back()->with('error','Client currently not active please contact admin to active your account!');
+            }
+        }
         $request->authenticate();
 
         $request->session()->regenerate();
